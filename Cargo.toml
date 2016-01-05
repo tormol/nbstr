@@ -1,0 +1,29 @@
+[package]
+name = "nbstr"
+keywords = ["string"]
+description = """
+# A lean `Cow<'static, str>` that cannot be written to.
+
+Might be useful when you want to store many short `str`s that you won't modify, and expect many of them to be literals.
+
+There is four variants of Nbstr; see README for details.
+"""
+readme = "README.md"
+version = "0.8.0"
+license = "Apache-2.0"
+repository = "https://github.com/tbm2/nbstr"
+documentation = "http://tbm2.github.io/nbstr"
+authors = ["Torbjørn Birch Moltu <t.b.moltu@lyse.net>"]
+
+[dependencies]
+clippy = {optional=true, version="0.*"}# wildest wildcard crates.io will allow.
+
+[features] # see README for descriptions
+default = []
+unstable = []
+64as48bit_hack = ["unstable"]
+no_giants = ["unstable"]
+
+[[test]]
+name = "integration_tests"
+path = "tests.rs"
