@@ -36,6 +36,10 @@ pub trait Protected {
     fn data(&mut self) -> &mut [u8];
     /// the root of AsRef,Borrow and Deref.
     fn get_slice(&self) -> &[u8];
+    /// transmuting from & to &mut or *mut is apparently undefined behaviour.
+    /// used by clone_from and take_box,
+    /// # Unsafety: self must hold a box.
+    unsafe fn get_mut_slice(&mut self) -> *mut[u8];
 }
 
 
@@ -134,7 +138,7 @@ impl Clone for Nbstr {
         // keep existing box if possible
         if self.variant() == BOX  &&  self.len() == from.len() {
             unsafe{ ptr::copy_nonoverlapping( from.as_ptr(),
-                                              mem::transmute(self.as_ptr()),
+                                              (&mut*self.get_mut_slice()).as_mut_ptr(),
                                               self.len()
                                              )};
         } else {
@@ -227,9 +231,7 @@ impl fmt::Debug for Nbstr {
 /// Returns Some if z contains a Box
 pub fn take_box(z: &mut Nbstr) -> Option<Box<str>> {
     if z.variant() == BOX {
-        // I asked on #rust, and transmuting from & to mut is apparently undefined behaviour.
-        // Is it really in this case?
-        let s: *mut str = unsafe{ mem::transmute(z.get_slice()) };
+        let s: *mut str = unsafe{ mem::transmute(z.get_mut_slice()) };
         // Cannot just assign default; then rust tries to drop the previous value!
         //  .. which then calls this function.
         mem::forget(mem::replace(z,  Nbstr::default()));

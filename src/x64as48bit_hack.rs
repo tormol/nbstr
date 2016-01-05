@@ -122,4 +122,10 @@ impl Protected for Nbstr {
     fn get_slice(&self) -> &[u8] {
         unsafe{ slice::from_raw_parts( get_ptr(self), get_len(self) )}
     }
+    unsafe fn get_mut_slice(&mut self) -> *mut[u8] {
+        let signed : *mut isize = mem::transmute(self.data[4..].as_mut_ptr());
+        let shifted = *signed >> 16;// sign extension
+        let ptr = shifted as *mut u8;
+        slice::from_raw_parts_mut(ptr, get_len(self))
+    }
 }

@@ -66,7 +66,7 @@ pub struct Nbstr {
     // The byte that contains variant cannot be in the middle of an array.
     #[cfg(target_endian="big")]
     length: NonZero<usize>,
-    pointer: *const u8,
+    pointer: usize,
     #[cfg(target_endian="little")]
     length: NonZero<usize>,
 }
@@ -90,11 +90,10 @@ impl Protected for Nbstr {
         }
         let len = ((variant as usize) << SHIFT_BITS)  |  s.len();
         Nbstr {
-            pointer: s.as_ptr(),
+            pointer: s.as_ptr() as usize,
             length: unsafe{ NonZero::new(len) },
         }
     }
-
     fn variant(&self) -> u8 {
         (*self.length >> SHIFT_BITS) as u8
     }
@@ -108,7 +107,7 @@ impl Protected for Nbstr {
     }
     fn get_slice(&self) -> &[u8] {
         if self.variant() > MAX_STACK {
-            unsafe{ slice::from_raw_parts(self.pointer,  *self.length & MAX_LENGTH ) }
+            unsafe{ slice::from_raw_parts(self.pointer as *const u8,  *self.length & MAX_LENGTH ) }
         } else {
             let arr: &[u8; SIZE] = unsafe{ mem::transmute( self )};
             if cfg!(target_endian="little") {
@@ -117,5 +116,8 @@ impl Protected for Nbstr {
                 &arr[1..1+self.variant() as usize]
             }
         }
+    }
+    unsafe fn get_mut_slice(&mut self) -> *mut [u8] {
+        slice::from_raw_parts_mut(self.pointer as *mut u8,  *self.length & MAX_LENGTH)
     }
 }

@@ -104,4 +104,7 @@ impl Protected for Nbstr {
             &self.data[..*self.variant as usize]
         }
     }
+    unsafe fn get_mut_slice(&mut self) -> *mut[u8] {
+        mem::transmute(self.data)
+    }
 }
