@@ -12,7 +12,7 @@ readme = "README.md"
 version = "0.8.0"
 license = "Apache-2.0"
 repository = "https://github.com/tbm2/nbstr"
-documentation = "http://tbm2.github.io/nbstr"
+documentation = "http://tbm2.github.io/rustdoc/nbstr"
 authors = ["Torbjørn Birch Moltu <t.b.moltu@lyse.net>"]
 
 [dependencies]
