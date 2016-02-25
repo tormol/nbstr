@@ -11,8 +11,8 @@ There is four variants of Nbstr; see README for details.
 readme = "README.md"
 version = "0.8.0"
 license = "Apache-2.0"
-repository = "https://github.com/tbm2/nbstr"
-documentation = "http://tbm2.github.io/rustdoc/nbstr"
+repository = "https://github.com/tormol/nbstr"
+documentation = "http://tormol.github.io/rustdoc/nbstr"
 authors = ["Torbjørn Birch Moltu <t.b.moltu@lyse.net>"]
 
 [dependencies]
