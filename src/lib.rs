@@ -22,8 +22,33 @@
 //! The length of the short str is then stored as a part of the tag/discriminant, which is why Nbstr is a struct and not an enum.
 //! The definition of 'short' depends on architecture and features.
 //!
-//! There is four variants of Nbstr, see README for features.
-
+//! There are a few feature flags that can reduce struct size. See README for details.
+//!
+//! # Examples
+//!
+//! ```rust
+//! extern crate nbstr;
+//! use nbstr::Nbstr;
+//!
+//! #[derive(Default)]
+//! struct Container {// <- no lifetime
+//!     list: Vec<Nbstr>
+//! }
+//! impl Container {
+//!     fn append<S:Into<Nbstr>>(&mut self,  s: S) {
+//!         self.list.push(s.into());
+//!     }
+//! }
+//! fn main() {
+//!     let mut c = Container::default();
+//!     c.append("foo");// &'static str
+//!     {   // &str wouldn't work here since the strings goes out of scope before the Vec
+//!         c.append(Nbstr::from_str(&("bar".to_string())));// is short enough to avoid allocating,
+//!         c.append("baz".to_string());
+//!     }
+//!     println!("{:?}", c.list);
+//! }
+//! ```
 
 // Overview:
 // nbstr_shared.rs: code used for all variants of Nbstr.

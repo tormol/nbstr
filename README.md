@@ -1,6 +1,7 @@
-# Nbstr - A lean `Cow<'static, str>` that cannot be written to.
+# Nbstr
+A lean `Cow<'static, str>` that cannot be written to.
 
-(Name stands for *non-borrowed str*).
+(Name stands for *non-borrowed `str`*).
 
 Might be useful when you want to store many short `str`s that you won't modify, and expect many of them to be literals.
 
@@ -9,12 +10,49 @@ Size is reduced by replacing `String` with `Box<str>`, which removes one `usize`
 To avoid boxing when possible, short `str`s can be stored inside the struct itself, replacing pointer and length. The length of the short `str` is then stored as a part of the tag/discriminant, which is why Nbstr is a struct and not an enum.  
 The definition of 'short' depends on architecture and features.  
 
+
+## Usage
+
+Add
+```toml
+[dependencies]
+nbstr = {version="0.8", features=["no_giants"]}
+```
+to Cargo.toml, and then
+
+```rust
+extern crate nbstr;
+use nbstr::Nbstr;
+
+#[derive(Default)]
+struct Container {// <- no lifetime
+    list: Vec<Nbstr>
+}
+impl Container {
+    fn append<S:Into<Nbstr>>(&mut self,  s: S) {
+        self.list.push(s.into());
+    }
+}
+fn main() {
+    let mut c = Container::default();
+    c.append("foo");// &'static str
+    {   // &str wouldn't work here since the strings goes out of scope before the Vec
+        c.append(Nbstr::from_str(&("bar".to_string())));// is short enough to avoid allocating,
+        c.append("baz".to_string());
+    }
+    println!("{:?}", c.list);
+}
+```
+
+
+## Feature flags
+
 There is four variants of Nbstr, selected with cargo features:
 * **default**: works on stable rust.  
-  Size is 2*usize+2 without any alignment, Lacks Option optimization.
+  Size is 2*usize+2 without any alignment, Lacks `Option<>` optimization.
 
 * **unstable**: Reduce struct size further with the unstable features  
-  `#[unsafe_no_drop_flag]` and `NonZero` (which Option<> optimization is based on).
+  `#[unsafe_no_drop_flag]` and `NonZero` (which `Option<>` optimization is based on).
   Size is 2*usize+1 without any alignment.
 
 * **no_giants**: Use the upper bits of length for the discriminant.  
@@ -34,8 +72,9 @@ There is four variants of Nbstr, selected with cargo features:
   On other architectures, the unsafe variant (or no_giants if enabled) will be used.  
   Requires nightly rust for #[unsafe_no_drop_flag] and NonZero; If you care enough to use this hack, you care enough to use nightly.
 
-Clippy can be enabled with the **clippy** feature, to get a lot of warnings for things I think are OK.
+Clippy can be enabled with **clippy**, to get a lot of warnings for things I think are OK.
 
-Code has only been tested on x86_64, please test it elsewhere!
 
-**License**: Apache-2.0
+## License
+
+Apache-2.0

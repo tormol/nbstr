@@ -4,7 +4,9 @@ keywords = ["string"]
 description = """
 # A lean `Cow<'static, str>` that cannot be written to.
 
-Might be useful when you want to store many short `str`s that you won't modify, and expect many of them to be literals.
+Might be useful if you want to avoid lifettime issues,
+or store many short `&str`s that you won't modify,
+and expect many of them to be literals.
 
 There is four variants of Nbstr; see README for details.
 """
