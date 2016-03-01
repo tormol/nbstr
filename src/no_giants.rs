@@ -13,11 +13,9 @@
  * limitations under the License.
  */
 
-use utf8_char::Utf8Char;
-use nbstr_shared::Protected;
+use shared::Protected;
 extern crate std;
 use std::{mem,slice};
-
 extern crate core;
 use self::core::nonzero::NonZero;
 
@@ -95,24 +93,6 @@ impl Protected for Nbstr {
             pointer: s.as_ptr(),
             length: unsafe{ NonZero::new(len) },
         }
-    }
-    fn from_1_utf8(c: Utf8Char) -> Self {
-        if !cfg!(target_endian="little") // might need to box it.
-         || cfg!(target_pointer_width="16") {// can't test any specific code
-            Self::from_str(&c)
-        }
-        else {// simple optimization: data and length go into separate fields
-            let stack_len = c.len() << SHIFT_BITS;
-            Nbstr {
-                // No shifting, because Utf8Char is left-aligned
-                // and least significant byte is first.
-                pointer: unsafe{ mem::transmute::<Utf8Char,u32>(c) } as *const u8,
-                length: unsafe{ NonZero::new(stack_len) },
-            }
-        }
-    }
-    fn from_1_utf32(c: char) -> Self {
-        Self::from_1_utf8(Utf8Char::from(c))
     }
 
     fn variant(&self) -> u8 {

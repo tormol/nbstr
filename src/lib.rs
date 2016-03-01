@@ -22,7 +22,7 @@
 //! The length of the short str is then stored as a part of the tag/discriminant, which is why Nbstr is a struct and not an enum.
 //! The definition of 'short' depends on architecture and features.
 //!
-//! There are a few feature flags that can reduce struct size. See README for details.
+//! There are four variants of nbstr; See README for details.
 //!
 //! # Examples
 //!
@@ -51,41 +51,31 @@
 //! ```
 
 // Overview:
-// nbstr_shared.rs: code used for all variants of Nbstr.
-// nbstr_*.rs: code specific to that variant / feature.
-// utf8_char.rs: helper for converting from char.
+// shared.rs: the public interface and code used in all variants.
+// other: variant-specific code and implementation details.
 
 
 // unstable features
-#![cfg_attr(feature="unstable", feature(associated_consts, unicode,  nonzero, unsafe_no_drop_flag))]
+#![cfg_attr(feature="unstable", feature(associated_consts,  nonzero, unsafe_no_drop_flag))]
 
 #![warn(missing_docs)]
 #![cfg_attr(feature="clippy", feature(plugin))]
 #![cfg_attr(feature="clippy", plugin(clippy))]
-#![cfg_attr(feature="clippy", allow(precedence, identity_op, len_without_is_empty))]
-// precedence: I prefer extra spaces around the central operator.
-// identity_op: keep the flow in unrolled loops.
-// len_without_is_empty: UTF8Char is never empty
-// needless_return:
-//     {let mut z = ...; z.modify(); z} looks unfinished.
-//     If a function returns early, it `return`s late for consistency.
-//     Not ignored because it has caught a few occurences that didn't match those.
 
-mod utf8_char;
-mod nbstr_shared;
+mod shared;
 
 #[cfg(not(any(feature="no_giants", all(feature="64as48bit_hack", target_arch="x86_64"))))]
-mod nbstr_default;
+mod default;
 #[cfg(all(feature="no_giants", not(all(feature="64as48bit_hack", target_arch="x86_64"))))]
-mod nbstr_no_giants;
+mod no_giants;
 #[cfg(all(feature="64as48bit_hack", target_arch="x86_64"))]
-mod nbstr_64as48bit_hack;
+mod x64as48bit_hack;// cannot start with a number
 mod nbstr {// rename variants
     #[cfg(not(any(feature="no_giants", all(feature="64as48bit_hack", target_arch="x86_64"))))]
-    pub use nbstr_default::*;
+    pub use default::*;
     #[cfg(all(feature="no_giants", not(all(feature="64as48bit_hackt", target_arch="x86_64"))))]
-    pub use nbstr_no_giants::*;
+    pub use no_giants::*;
     #[cfg(all(feature="64as48bit_hack", target_arch="x86_64"))]
-    pub use nbstr_64as48bit_hack::*;
+    pub use x64as48bit_hack::*;
 }
 pub use nbstr::Nbstr;

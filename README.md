@@ -16,7 +16,9 @@ The definition of 'short' depends on architecture and features.
 Add
 ```toml
 [dependencies]
-nbstr = {version="0.8", features=["no_giants"]}
+nbstr = "0.9"
+# or if you can use unstable features:
+nbstr = {version="0.9", features=["no_giants"]}
 ```
 to Cargo.toml, and then
 
@@ -47,18 +49,18 @@ fn main() {
 
 ## Feature flags
 
-There is four variants of Nbstr, selected with cargo features:
-* **default**: works on stable rust.  
+There are four variants of Nbstr, selected with cargo features:
+* The default: works on stable Rust.  
   Size is 2*usize+2 without any alignment, Lacks `Option<>` optimization.
 
-* **unstable**: Reduce struct size further with the unstable features  
+* **unstable**: Reduce struct size with the unstable features
   `#[unsafe_no_drop_flag]` and `NonZero` (which `Option<>` optimization is based on).
   Size is 2*usize+1 without any alignment.
 
 * **no_giants**: Use the upper bits of length for the discriminant.  
   This puts a limit on how long `str`s Nbstr can store, but reduces struct size to that of `&str`.
 
-  The limit is high enough* that is should not be an issue in most use cases of Nbstr\*\*, but since it is not enforced in release mode, it **might represent a security hole**.
+  The limit is high enough* that is should not be an issue in most use cases of Nbstr\*\*, but since it is not enforced in release mode, it **might represent a security vulnerability**.
 
   Not available on stable because it depends on `#[unsafe_no_drop_flag]`.
 

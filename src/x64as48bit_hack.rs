@@ -13,8 +13,7 @@
  * limitations under the License.
  */
 
-use utf8_char::Utf8Char;
-use nbstr_shared::Protected;
+use shared::Protected;
 extern crate std;
 use std::{mem,slice};
 extern crate core;
@@ -112,16 +111,6 @@ impl Protected for Nbstr {
         unsafe{ set_ptr(&mut z,  s.as_ptr()) };
         unsafe{ set_len(&mut z,  s.len()) };
         return z;
-    }
-    fn from_1_utf8(c: Utf8Char) -> Self {
-        let mut z = Self::new(c.len() as u8);
-        z.data = unsafe{ mem::transmute_copy(&c) };
-        return z;
-    }
-    fn from_1_utf32(c: char) -> Self {
-        let mut arr: [u8; MAX_STACK as usize] = unsafe{ mem::uninitialized() };
-        let bytes = c.encode_utf8(&mut arr).unwrap();
-        from_parts(bytes as u8, arr)
     }
 
     fn variant(&self) -> u8 {

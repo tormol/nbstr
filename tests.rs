@@ -24,21 +24,14 @@ use nbstr::Nbstr;
 /// Unfortunately there is no way to prevent aditional public methods or traits.
 
 pub trait NbstrTrait: Sized + Clone + Hash + Eq + Ord + Display + Debug//Debug prepends the str with the way it's stored
- +Default + From<&'static str>+From<Box<str>>+From<String>+From<Cow<'static,str>> + From<char>
+ +Default + From<&'static str>+From<Box<str>>+From<String>+From<Cow<'static,str>>
  +Deref<Target=str> + Borrow<str>+Borrow<[u8]> + AsRef<str>+AsRef<[u8]>
  +Into<Box<str>>+Into<String>+Into<Cow<'static,str>>//actually, implement From<Nbstr> for Box<str> and String
 {}
 impl NbstrTrait for Nbstr {}
 
 const A_FEW: &'static str = "\0eéaå𝛼 ∆θ≈π";
-#[test]
-fn from_char() {
-    for c in A_FEW.chars() {
-        let mut s = String::new();
-        s.push(c);
-        assert_eq!(Nbstr::from(c).deref(), s);
-    }
-}
+
 #[test]
 fn from_a_few() {
     assert_eq!(Nbstr::from(A_FEW).deref(), A_FEW);

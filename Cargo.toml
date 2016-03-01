@@ -8,10 +8,10 @@ Might be useful if you want to avoid lifettime issues,
 or store many short `&str`s that you won't modify,
 and expect many of them to be literals.
 
-There is four variants of Nbstr; see README for details.
+There are four variants of Nbstr; see README for details.
 """
 readme = "README.md"
-version = "0.8.0"
+version = "0.9.0"
 license = "Apache-2.0"
 repository = "https://github.com/tormol/nbstr"
 documentation = "http://tormol.github.io/rustdoc/nbstr"
