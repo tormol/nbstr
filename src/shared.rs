@@ -15,7 +15,6 @@
 
 use Nbstr;
 use nbstr::{MAX_LENGTH,MAX_STACK,LITERAL,BOX};
-use utf8_char::Utf8Char;
 extern crate std;
 use std::cmp::Ordering;
 use std::ops::Deref;
@@ -31,10 +30,6 @@ pub trait Protected {
     fn new(u8) -> Self;
     /// store this str, which is either &'static or boxed
     fn with_pointer(u8,  &str) -> Self;
-    /// From<Utf8Char>
-    fn from_1_utf8(Utf8Char) -> Self;
-    /// From<char>
-    fn from_1_utf32(char) -> Self;
 
     fn variant(&self) -> u8;
     /// get the area of self where (length,pointer)|inline is.
@@ -125,11 +120,6 @@ impl From<Cow<'static, str>> for Nbstr {
         Cow::Owned(owned) => Self::from(owned),
         Cow::Borrowed(borrowed) => Self::from(borrowed),
     }}
-}
-impl From<char> for Nbstr {
-    fn from(c: char) -> Self {
-        Self::from_1_utf32(c)
-    }
 }
 
 impl Clone for Nbstr {
