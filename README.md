@@ -16,9 +16,9 @@ The definition of 'short' depends on architecture and features.
 Add
 ```toml
 [dependencies]
-nbstr = "0.9"
+nbstr = {git = "https://github.com/tormol/nbstr.git"}
 # or if you can use unstable features:
-nbstr = {version="0.9", features=["no_giants"]}
+nbstr = {git = "https://github.com/tormol/nbstr.git", features=["no_giants"]}
 ```
 to Cargo.toml, and then
 
