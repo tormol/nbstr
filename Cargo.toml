@@ -2,13 +2,7 @@
 name = "nbstr"
 keywords = ["string"]
 description = """
-# A lean `Cow<'static, str>` that cannot be written to.
-
-Might be useful if you want to avoid lifettime issues,
-or store many short `&str`s that you won't modify,
-and expect many of them to be literals.
-
-There are four variants of Nbstr; see README for details.
+A lean `Cow<'static, str>` that cannot be written to.
 """
 readme = "README.md"
 version = "0.9.0"
